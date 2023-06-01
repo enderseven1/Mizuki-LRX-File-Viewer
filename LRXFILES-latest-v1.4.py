@@ -225,7 +225,7 @@ if __name__ == '__main__':
                     del lrxcontect[-1]
                     if lrxcontect != []:
                         lrxcontect[-1] = lrxcontect[-1][:-1]
-                print(lrxcontect)
+                #print(lrxcontect)
                 for index,iiie in enumerate(lrxcontect):
                     for inde in endingapi:
                         if inde in iiie:
@@ -235,10 +235,10 @@ if __name__ == '__main__':
                             else:
                                 lrxcontect[index] = iiie = iiie[:iiie.index(inde)]
                             #print(lrxcontect[index])
-                        print(lrxcontect)
+                        #print(lrxcontect)
                 lrxcont = []
                 contents= []
-                print(lrxcontect)
+                #print(lrxcontect)
                 lrxccccc = ''
                 lrxcontect = ''.join(lrxcontect)
                 for i in lrxcontect:
