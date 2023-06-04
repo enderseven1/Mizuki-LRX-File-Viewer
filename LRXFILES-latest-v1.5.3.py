@@ -516,7 +516,7 @@ def newFile(filepath, password=None):
     '''
     with open(filepath,'w+', encoding='utf-8') as lrx:
         lrx.write('Header: ' + HEADERS[selected_version] + '\n')
-        if selected_version == '3.0' or selected_version == '3.1':
+        if selected_version in TRAILER_VERS:
             if selected_version == '3.2':
                 lrx.write('Password: ' + password + '\n')
             lrx.write('Trailer: ' + TRAILERS[selected_version])
