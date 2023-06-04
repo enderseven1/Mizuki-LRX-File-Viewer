@@ -123,7 +123,7 @@ STRINGS_OF_PY = {'中文': {'BrokenTrailer': ('错误编辑等原因破坏了尾
                     'Continue': '继续',
                     'CopyrightTitle': '\n感谢使用', 
                     'CreateFile1': '将在', 
-                    'CreateFile2': '/创建文件。', 
+                    'CreateFile2': '\\创建文件。', 
                     'DelLang': '切换语言', 
                     'EnPassword': '文件已加密',
                     'EnterPassword': '请输入密码（自动截取前十个字符）：',
@@ -176,7 +176,7 @@ STRINGS_OF_PY = {'中文': {'BrokenTrailer': ('错误编辑等原因破坏了尾
                     'Continue': 'Continue',
                     'CopyrightTitle': '\nThanks for Using.', 
                     'CreateFile1': 'A new file will be created at ', 
-                    'CreateFile2': '/.', 
+                    'CreateFile2': '\\.', 
                     'DelLang': 'Change Language', 
                     'EnPassword': 'Encrypted file',
                     'EnterPassword': 'Please enter the password (Automatically intercept the first 10 characters): ',
@@ -355,12 +355,12 @@ def firstSel():
     selected_item = easygui.buttonbox(msg=STRINGS_OF_PY[language]['Welcome'] + '\n\n' +STRINGS_OF_PY[language]['PlsSelectAction'], 
                              title=STRINGS_OF_PY[language]['WelcomeTitle'], choices=(STRINGS_OF_PY[language]['Select'], STRINGS_OF_PY[language]['NewFile'], STRINGS_OF_PY[language]['DelLang'])) #selected_item is selection of this window to select an action. *selected_item 是用户在此窗口选择的项，用于获取用户的操作。
     if selected_item == STRINGS_OF_PY[language]['Select']: #If "Select a file" is selected. *如果选择“选择文件”。
-        selected_file = tkinter.filedialog.askopenfilename(title=STRINGS_OF_PY[language]['Select'], filetypes=((STRINGS_OF_PY[language]['LRXFileType'], "*.lrx"),)) #选择文件
+        selected_file = tkinter.filedialog.askopenfilename(title=STRINGS_OF_PY[language]['Select'], filetypes=((STRINGS_OF_PY[language]['LRXFileType'], "*.lrx"),)).replace('/', '\\') #选择文件
         if selected_file != None and selected_file != '': #Open it if a file is selected. *打开选择的文件。
             readfile(selected_file)
         selected_item = firstSel()
     elif selected_item == STRINGS_OF_PY[language]['NewFile']: #If "New File" is selected. *如果选择“新建文件”。
-        Folderpath = tkinter.filedialog.askdirectory(title=STRINGS_OF_PY[language]['SelectFolder'])
+        Folderpath = tkinter.filedialog.askdirectory(title=STRINGS_OF_PY[language]['SelectFolder']).replace('/', '\\')
         if Folderpath != '':
             selected_version = easygui.buttonbox(msg=STRINGS_OF_PY[language]['CreateFile1'] + Folderpath + STRINGS_OF_PY[language]['CreateFile2'] + '\n\n' + STRINGS_OF_PY[language]['Whichver'], 
                                          title=STRINGS_OF_PY[language]['NewFile'], choices=('1.0', '2.0', '3.0', '3.1', '3.2')) #selected_version is version is selected of file. *selected_version是选择的文件版本
@@ -516,7 +516,7 @@ def randomFilename():
     global path_of_newfile
     name_of_new_file = [ALPHABET[random.randint(0,35)] for a in range(random.randint(8,15))]
     name_of_new_file = ''.join(name_of_new_file)
-    path_of_newfile = Folderpath + '/' + name_of_new_file + '.lrx'
+    path_of_newfile = os.path.join(Folderpath, name_of_new_file + '.lrx').replace('/','\\')
     if os.path.isfile(path_of_newfile):
         randomFilename()
     return path_of_newfile
@@ -597,7 +597,7 @@ def setFilename():
         file_name = ''.join([file_name,'.lrx'])
         for BANED_CHAR in BANED_CHARS_IN_FILENAME:
             file_name = file_name.replace(BANED_CHAR,'') #替换文件名中不能使用的字符
-        path_of_newfile = Folderpath + '/' + file_name
+        path_of_newfile = os.path.join(Folderpath, file_name).replace('/','\\')
         if os.path.isfile(path_of_newfile):
             print(STRINGS_OF_PY[language]['FileExists'])
             easygui.msgbox(STRINGS_OF_PY[language]['FileExists'], STRINGS_OF_PY[language]['ErrorTip'])
@@ -619,7 +619,7 @@ def setFilename32():
             name_and_pwd[0] = file_name = ''.join([file_name,'.lrx'])
             for BANED_CHAR in BANED_CHARS_IN_FILENAME:
                 name_and_pwd[0] = file_name = file_name.replace(BANED_CHAR,'') #替换文件名中不能使用的字符
-            path_of_newfile = Folderpath + '/' + file_name
+            path_of_newfile = os.path.join(Folderpath, file_name).replace('/','\\')
             if os.path.isfile(path_of_newfile):
                 print(STRINGS_OF_PY[language]['FileExists'])
                 easygui.msgbox(STRINGS_OF_PY[language]['FileExists'], STRINGS_OF_PY[language]['ErrorTip'])
@@ -752,7 +752,7 @@ if __name__ == '__main__' and MODULE_APPLY: #当其不是作为模块出现时
         if is_updated: #如果是更新的（版本信息不对应）
             with open(config_file, 'a+', encoding='utf-8') as configobj:
                 writetoConfig(configobj, 'Version: ', VERSION)
-            print(WHAT_S_NEW[language])
+            print(WHAT_S_NEW[language] + '\n')
             easygui.msgbox(WHAT_S_NEW[language] + '\nBy Shimada Mizuki', STRINGS_OF_PY[language]['WhatsNew'])
             is_updated = False
         if firstboot:
