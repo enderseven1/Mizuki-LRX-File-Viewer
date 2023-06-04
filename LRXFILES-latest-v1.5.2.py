@@ -107,7 +107,7 @@ HEADERS = {'1.0':'6025631696 5160966048 7622076112 5654449360 4936184512 6177212
          '3.2':'xwAUxIoxnx UoxwnxxwRa uxAAwuxooA RUwwIxwUnA xUaRAwuwUx UxURRRnIxw'} #定义头 Header
 TRAILERS = {'3.0':'18694256 23424128 23649360 24550288 21847504 22523200 21847504 7207424 17342864 23649360 27478304 26352144 24099824 23649360',
         '3.1':'oaxnRAUx AIRARoAa AIxRnIxw ARUUwAaa AoaRuUwR AAUAIAww AoaRuUwR uAwuRAR ouIRAaxR AIxRnIxw AuRuaIwR AxIUAoRR ARwnnaAR AIxRnIxw'} #定义尾 Ending
-TRAILERS['3.2'] = TRAILERS['3.1']
+TRAILERS['3.2'] = TRAILERS['3.1'] #3.1和3.2版本具有相同的尾
 ALLOWED_CHARS = r'(1)|(2)|(3)|(4)|(5)|(6)|(7)|(8)|(9)|(0)'
 ALLOWED_CHARS_31 = r'(w)|(o)|(A)|(I)|(R)|(U)|(x)|(u)|(a)|(n)' #3.1版本文件中允许出现的文字
 BANLISTWORDS = r'(梁如萱我喜欢你)|(梁如萱我爱你)|(Liang Ruxuan I Love You)|(Liang Ruxuan I Like You)' #违禁词表
@@ -242,7 +242,8 @@ def checkEnd(lrxfileend):
         and lrxfileend != 'Trailer: ' + TRAILERS[version_of_file]):
         if version_of_file == '3.0' or version_of_file == '3.1':
             print(STRINGS_OF_PY[language]['BrokenTrailer'])
-            trailerset = easygui.buttonbox(msg=STRINGS_OF_PY[language]['BrokenTrailer'], title=STRINGS_OF_PY[language]['ErrorTip'], choices=(STRINGS_OF_PY[language]['Continue'], STRINGS_OF_PY[language]['Cancel']))
+            trailerset = easygui.buttonbox(msg=STRINGS_OF_PY[language]['BrokenTrailer'], title=STRINGS_OF_PY[language]['ErrorTip'],
+                                            choices=(STRINGS_OF_PY[language]['Continue'], STRINGS_OF_PY[language]['Cancel']))
             if trailerset == STRINGS_OF_PY[language]['Continue']:
                 if lrxfileend.startswith('E'):
                     return 'FakeEnd' #以E开头但是尾不对（可能是尾被破坏）
@@ -273,8 +274,12 @@ def checkHead(lrxfilecontect):
     elif (head_of_this_file == 'Heading: ' + HEADERS['2.0']
           or head_of_this_file == 'Header: ' + HEADERS['2.0']):
         version_of_file = '2.0'
-    elif (head_of_this_file == 'Heading: ' + HEADERS['3.0'] or head_of_this_file == 'Heading: ' + HEADERS['3.1'] or head_of_this_file == 'Heading: ' + HEADERS['3.2']
-          or head_of_this_file == 'Header: ' + HEADERS['3.0'] or head_of_this_file == 'Header: ' + HEADERS['3.1'] or head_of_this_file == 'Header: ' + HEADERS['3.2']):
+    elif (head_of_this_file == 'Heading: ' + HEADERS['3.0']
+           or head_of_this_file == 'Heading: ' + HEADERS['3.1']
+             or head_of_this_file == 'Heading: ' + HEADERS['3.2']
+          or head_of_this_file == 'Header: ' + HEADERS['3.0']
+            or head_of_this_file == 'Header: ' + HEADERS['3.1']
+              or head_of_this_file == 'Header: ' + HEADERS['3.2']):
         end_of_this_file = lrxfilecontect[-1]
         if (head_of_this_file == 'Heading: ' + HEADERS['3.0']
             or head_of_this_file == 'Header: ' + HEADERS['3.0']):
@@ -397,7 +402,6 @@ def firstSel():
                                 for temp_password_char in set_password:
                                     temp_password.append(chr(lrxpwd.to_be_pwd(ord(temp_password_char)))) #密码
                                 set_password = ''.join(temp_password)
-                                print(set_password)
                                 newFile(path_of_newfile, set_password)
                                 break
                         else:
@@ -606,7 +610,7 @@ def setFilename32():
     '''
         设置文件名窗口3.2。
     '''
-    global path_of_newfile
+    global path_of_newfile, name_and_pwd
     name_and_pwd = easygui.multpasswordbox(msg=STRINGS_OF_PY[language]['FilenameSetWays'] + '\n\n' + STRINGS_OF_PY[language]['SetFilePassword'], 
                                     title=STRINGS_OF_PY[language]['SetFilenameTitle32'], fields=(STRINGS_OF_PY[language]['SetFilenameTitle'],STRINGS_OF_PY[language]['Password'])) #密码输入框
     if name_and_pwd:
@@ -619,10 +623,12 @@ def setFilename32():
             if os.path.isfile(path_of_newfile):
                 print(STRINGS_OF_PY[language]['FileExists'])
                 easygui.msgbox(STRINGS_OF_PY[language]['FileExists'], STRINGS_OF_PY[language]['ErrorTip'])
-                setFilename()
+                setFilename32()
         elif file_name == '': #随机生成文件名
             name_and_pwd[0] = file_name = path_of_newfile = randomFilename()
         return name_and_pwd
+    else:
+        return None
     
 def trailerFix(broken_trailer, fileobj):
     '''
@@ -706,8 +712,8 @@ def writes32(edited, fileobj, passworded):
     for unprocessed_line in splited_content:
         char_of_line = []
         for unprocessed_char in unprocessed_line:
-            temp_of_converting = [list((chr(lrxpwd.encrypt(ord(passworded[int(number_of_charcode)]))) 
-                                   for number_of_charcode in str(ord(unprocessed_char)*2011*8*14)))]
+            temp_of_converting = list((chr(lrxpwd.encrypt(ord(passworded[int(number_of_charcode)]))) 
+                                   for number_of_charcode in str(ord(unprocessed_char)*2011*8*14)))
             char_of_line.append(''.join(temp_of_converting))
         line_of_content.append(' '.join(char_of_line))
     fileobj.write('\n'.join(line_of_content))
