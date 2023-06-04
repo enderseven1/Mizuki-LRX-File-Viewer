@@ -593,7 +593,7 @@ def reads(lrxfilename,fileobj):
         fileobj.seek(0)
         unprocessed_content = fileobj.readlines()
         del unprocessed_content[0] #删除头
-        if version_of_file == '3.0' or version_of_file == '3.1' or version_of_file == '3.2': 
+        if version_of_file in TRAILER_VERS: 
             del unprocessed_content[-1]
             if unprocessed_content != []:
                 unprocessed_content[-1] = unprocessed_content[-1][:-1]
