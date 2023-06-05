@@ -908,4 +908,6 @@ if __name__ == '__main__' and MODULE_APPLY and not argmode: #当其不是作为�
         if selection == 'DelLang':
             continue
         break
-    print(STRINGS_OF_PY[language]['CopyrightTitle'] + '\nCopyright © 2023 Shimada Mizuki. All Rights Reserved.') #结尾版权信息 Copyright
+    if language:
+        print(STRINGS_OF_PY[language]['CopyrightTitle'])
+    print('Copyright © 2023 Shimada Mizuki. All Rights Reserved.') #结尾版权信息 Copyright
